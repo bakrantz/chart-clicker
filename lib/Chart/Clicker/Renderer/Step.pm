@@ -63,25 +63,22 @@ sub finalize {
             my $color = $clicker->color_allocator->next;
             my @vals = @{ $series->values };
             my @keys = @{ $series->keys };
+            my $kcount = $series->key_count - 1;
 
 #B. Krantz Hack starts: going to change those input x and y values to stepify them
-            #memorize keys and vals in case needed later
             my ($step_vals, $step_keys) = ([], []);
-            my $step_graph_type = lc($self->type);
-            $step_graph_type = 'vertical' unless (($step_graph_type eq 'vertical') || ($step_graph_type eq 'horizontal'));          
-            if    ($step_graph_type eq 'vertical') {
-              ($step_keys, $step_vals) = _vertical_stepify(\@keys, \@vals); #vertical_stepify
+            $self->type = lc($self->type);
+            $self->type = 'vertical' unless (($self->type eq 'vertical') || ($self->type eq 'horizontal'));          
+            if    ($self->type eq 'vertical') {
+              ($step_keys, $step_vals) = _vertical_stepify(\@keys, \@vals);
             }
-            elsif ($step_graph_type eq 'horizontal') {
-              ($step_keys, $step_vals) = _horizontal_stepify(\@keys, \@vals); #horizontal_stepify
+            elsif ($self->type eq 'horizontal') {
+              ($step_keys, $step_vals) = _horizontal_stepify(\@keys, \@vals);
             };
             @vals = @$step_vals;
             @keys = @$step_keys;
-            #Note had to change the key_count index here to reflect the
-            #increase in the number of points due to stepification.
-            my $kcount = scalar(@vals) - 1; 
-            # OLD CODE: my $kcount = $series->key_count - 1;
-#B. Krantz Hack end
+            $kcount = scalar(@vals) - 1; #Change the key_count index here to reflect the       
+#B. Krantz Hack end                      #increase in the number of points due to stepification.
 
             my $skip = 0;
             my $previous_x = -1;
@@ -161,8 +158,8 @@ sub finalize {
 
 #START shape hack B. Krantz
 #Need to change keys and vals back to original vals and keys and need to redo $kcount
-            my @vals = @{ $series->values }; #B. Krantz Hack to remember original x and y's
-            my @keys = @{ $series->keys }; #B. Krantz Hack to remember original x and y's
+            @vals = @{ $series->values }; 
+            @keys = @{ $series->keys }; 
             $kcount = $series->key_count - 1;
 #END shape hack B. Krantz
 
